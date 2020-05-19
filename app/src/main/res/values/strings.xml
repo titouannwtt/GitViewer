@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GithubV</string>
+    <string name="main_bouton">Bouton principal</string>
+    <string name="affichage">Ceci est un test</string>
+</resources>
