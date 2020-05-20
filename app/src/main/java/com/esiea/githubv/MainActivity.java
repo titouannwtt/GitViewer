@@ -7,16 +7,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainActivity extends BaseActivity implements MainInterface {
 
+    private String user = null;
+    private static final String url = "https://api.github.com/";
     private RecyclerView recyclerView;
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -25,7 +37,12 @@ public class MainActivity extends BaseActivity implements MainInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        showList();
+        makeApiCall();
+    }
 
+    @Override
+    public void showList() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -71,14 +88,6 @@ public class MainActivity extends BaseActivity implements MainInterface {
                 affichage.setText("OK");
             }
         });
-
-        Users user = new Users("titouannwtt", 63909350, "https://avatars2.githubusercontent.com/u/63909350?v=4");
-        showBaseError();
-    }
-
-    @Override
-    public void showList(List<Users> list) {
-
     }
 
     @Override
@@ -88,6 +97,39 @@ public class MainActivity extends BaseActivity implements MainInterface {
 
     @Override
     public void showError() {
+        Toast.makeText(getApplicationContext(), "API Error", Toast.LENGTH_SHORT).show();
+    }
 
+    public void makeApiCall() {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        GitApi gitApi = retrofit.create(GitApi.class);
+        user = "titouannwtt";
+        Call<RestUserResponse> call = gitApi.getUserInformations(user);
+        call.enqueue(new Callback<RestUserResponse>() {
+            @Override
+            public void onResponse(Call<RestUserResponse> call, Response<RestUserResponse> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    List<InfosUser> userInfo = response.body().getResults();
+                    Log.d("TEST", ""+userInfo);
+                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    showError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RestUserResponse> call, Throwable t) {
+                showError();
+            }
+        });
     }
 }
