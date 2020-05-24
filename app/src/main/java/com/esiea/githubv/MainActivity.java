@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends BaseActivity implements MainInterface {
 
     private String user = null;
-    private static final String url = "https://api.github.com/";
+    private static final String url = "https://api.github.com";
     private RecyclerView recyclerView;
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -37,12 +37,10 @@ public class MainActivity extends BaseActivity implements MainInterface {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        showList();
         makeApiCall();
     }
 
-    @Override
-    public void showList() {
+    /*public void showInterfaceExample() {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -50,8 +48,9 @@ public class MainActivity extends BaseActivity implements MainInterface {
         recyclerView.setLayoutManager(layoutManager);
 
         final List<String> input = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            input.add("Test" + i);
+        for(int j=0; j++; j==100)
+        {
+            input.add("Exemple" + j);
         }
 
         mAdapter = new ListAdapter(input);
@@ -88,6 +87,43 @@ public class MainActivity extends BaseActivity implements MainInterface {
                 affichage.setText("OK");
             }
         });
+    }*/
+
+    @Override
+    public void showRepoList(List<Repo> repos) {
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        final List<String> input = new ArrayList<>();
+        for(Repo elem: repos)
+        {
+            input.add("Nom:" + elem.getName());
+        }
+
+        mAdapter = new ListAdapter(input);
+        recyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void showUserList(List<User> userList) {
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        final List<String> input = new ArrayList<>();
+        for(User elem: userList)
+        {
+            input.add("Nom:" + elem.getLogin());
+        }
+
+        mAdapter = new ListAdapter(input);
+        recyclerView.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -111,25 +147,49 @@ public class MainActivity extends BaseActivity implements MainInterface {
                 .build();
 
         GitApi gitApi = retrofit.create(GitApi.class);
+
+        /*
+        //=========== RECUPERATION DE REPO
         user = "titouannwtt";
-        Call<RestUserResponse> call = gitApi.getUserInformations(user);
-        call.enqueue(new Callback<RestUserResponse>() {
+        Call<List<Repo>> callRepo = gitApi.repoUser(user);
+        callRepo.enqueue(new Callback<List<Repo>>() {
             @Override
-            public void onResponse(Call<RestUserResponse> call, Response<RestUserResponse> response) {
+            public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
                 if(response.isSuccessful() && response.body() != null) {
-                    List<InfosUser> userInfo = response.body().getResults();
-                    Log.d("TEST", ""+userInfo);
-                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                    List<Repo> repos = response.body();
+                    showRepoList(repos);
+                } else {
                     showError();
                 }
             }
 
             @Override
-            public void onFailure(Call<RestUserResponse> call, Throwable t) {
+            public void onFailure(Call<List<Repo>> call, Throwable t) {
                 showError();
             }
         });
+        //=====================================
+         */
+
+
+        //=========== RECUPERATION DES UTILISATEURS
+        Call<List<User>> callUserlist = gitApi.getUserList("20", "100" );
+        callUserlist.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> callUserlist, Response<List<User>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    List<User> userList = response.body();
+                    showUserList(userList);
+                } else {
+                    showError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> callUserlist, Throwable t) {
+                showError();
+            }
+        });
+
     }
 }
