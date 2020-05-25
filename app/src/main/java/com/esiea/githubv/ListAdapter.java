@@ -1,16 +1,24 @@
 package com.esiea.githubv;
 
+import android.content.Context;
+import android.media.Image;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
+import java.net.URL;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     private List<User> values;
+    private Context context;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -19,6 +27,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
         // each data item is just a string in this case
         TextView txtHeader;
         TextView txtFooter;
+        ImageView imgIcon;
         View layout;
 
         ViewHolder(View v) {
@@ -26,6 +35,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             layout = v;
             txtHeader = (TextView) v.findViewById(R.id.firstLine);
             txtFooter = (TextView) v.findViewById(R.id.secondLine);
+            imgIcon = (ImageView) v.findViewById(R.id.icon);
         }
     }
 
@@ -63,8 +73,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+
+
+
+
+
         final User login = values.get(position);
         holder.txtHeader.setText(login.getLogin());
+        Picasso.get().load(login.getAvatar_url()).into(holder.imgIcon);
+
+        //holder.imgIcon.setImageURI(Uri.parse(login.getAvatar_url()));
+        //Picasso.with(context).load(login.getAvatar_url()).into(holder.imgIcon);
         /*holder.txtHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +91,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
             }
         });*/
 
-        holder.txtFooter.setText("Footer: " + login);
+        holder.txtFooter.setText(""+login.getHtml_url());
     }
 
     // Return the size of your dataset (invoked by the layout manager)

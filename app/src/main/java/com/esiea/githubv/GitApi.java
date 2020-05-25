@@ -21,7 +21,7 @@ public interface GitApi {
     );
 
     @GET("/users/{user}")
-    Call<User> getUserInformations(
+    Call<User> getUserInformation(
             @Path("user") String user
     );
 

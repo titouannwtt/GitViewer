@@ -1,23 +1,16 @@
 package com.esiea.githubv;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -53,12 +46,12 @@ public class MainActivity extends BaseActivity implements MainInterface {
                 .setLenient()
                 .create();
         sharedPreferences = getSharedPreferences("favorite", Context.MODE_PRIVATE);
-        List<User> userList = getDataFromCache();
+        /*List<User> userList = getDataFromCache();
         if(userList != null) {
             showUserList(userList);
-        } else {
+        } else {*/
             makeApiCall();
-        }
+        //}
     }
 
     private List<User> getDataFromCache() {
@@ -210,7 +203,7 @@ public class MainActivity extends BaseActivity implements MainInterface {
 
         /*
         //=========== RECUPERATION DE REPO
-        user = "raamkumr-valentino";
+        user = "titouannwtt";
         Call<List<Repo>> callRepo = gitApi.repoUser(user);
         callRepo.enqueue(new Callback<List<Repo>>() {
             @Override
@@ -232,7 +225,7 @@ public class MainActivity extends BaseActivity implements MainInterface {
          */
 
 
-        //=========== RECUPERATION DES UTILISATEURS
+        //=========== RECUPERATION DE TOUS LES UTILISATEURS GITHUB
         Call<List<User>> callUserlist = gitApi.getUserList("20", "100" );
         callUserlist.enqueue(new Callback<List<User>>() {
             @Override
@@ -251,6 +244,29 @@ public class MainActivity extends BaseActivity implements MainInterface {
                 showError();
             }
         });
+
+
+        //=========== RECUPERATION DE UN UTILISATEUR GITHUB
+        /*String user = "mojombo";
+        Call<User> callUser = gitApi.getUserInformation(user);
+        callUser.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    User user = response.body();
+                    List<User> userList = new ArrayList<>();
+                    userList.add(user);
+                    showUserList(userList);
+                } else {
+                    showError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                showError();
+            }
+        });*/
 
     }
 
