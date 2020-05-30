@@ -1,4 +1,7 @@
-package com.esiea.githubv;
+package com.esiea.githubv.data;
+
+import com.esiea.githubv.model.Repo;
+import com.esiea.githubv.model.User;
 
 import java.util.List;
 

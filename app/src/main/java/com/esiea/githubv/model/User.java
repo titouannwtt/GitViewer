@@ -1,4 +1,4 @@
-package com.esiea.githubv;
+package com.esiea.githubv.model;
 
 public class User {
     private String login;
