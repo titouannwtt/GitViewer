@@ -49,7 +49,7 @@ public class ListRepoAdapter extends RecyclerView.Adapter<ListRepoAdapter.ViewHo
     @Override
     public ListRepoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.row_layout, parent, false);
+        View v = inflater.inflate(R.layout.row_repolayout, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }

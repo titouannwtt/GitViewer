@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,20 +21,16 @@ import android.widget.Toast;
 import com.esiea.githubv.Singletons;
 import com.esiea.githubv.controller.MainController;
 import com.esiea.githubv.model.BaseActivity;
-import com.esiea.githubv.model.ListRepoAdapter;
 import com.esiea.githubv.model.ListUserAdapter;
 import com.esiea.githubv.R;
-import com.esiea.githubv.model.Repo;
 import com.esiea.githubv.model.User;
 
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
-    private String user = null;
     private RecyclerView recyclerView;
     private ListUserAdapter mUserAdapter;
-    private ListRepoAdapter mRepoAdapter;
     private SearchView searchView;
     private RecyclerView.LayoutManager layoutManager;
     private MainController controller;
@@ -48,6 +45,7 @@ public class MainActivity extends BaseActivity {
                 Singletons.getSharedPreferences(getApplicationContext())
         );
         controller.onStart();
+        showPageButton();
 
     }
 
@@ -80,21 +78,6 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
-    public void showRepoList(List<Repo> repos) {
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        mRepoAdapter = new ListRepoAdapter(repos);
-        recyclerView.setAdapter(mRepoAdapter);
-    }
-
-
     public void showUserList(List<User> userList) {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -121,49 +104,27 @@ public class MainActivity extends BaseActivity {
     }
 
     public void navigateToDetails(User user) {
-        Toast.makeText(getApplicationContext(), "TEST"+user.getLogin(), Toast.LENGTH_SHORT).show();
+        Intent myIntent = new Intent(MainActivity.this, RepoListActivity.class);
+        myIntent.putExtra("login", user.getLogin());
+        myIntent.putExtra("id", user.getId());
+        myIntent.putExtra("avatar_url", user.getAvatar_url());
+        MainActivity.this.startActivity(myIntent);
     }
 
-    public void showInterfaceExample() {
-        /*recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-
-        mAdapter = new ListAdapter(input);
-        recyclerView.setAdapter(mAdapter);*/
-
-        //===========================
-        //SWIPE
-
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder
-                            target) {
-                        return false;
-                    }
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                        //input.remove(viewHolder.getAdapterPosition());
-                        mUserAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-                    }
-                };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        //==========================
-
-        Button main_bouton = findViewById(R.id.button);
-        main_bouton.setBackgroundColor(Color.RED);
-        main_bouton.setOnClickListener(new View.OnClickListener() {
+    public void showPageButton() {
+        Button page_suivante = findViewById(R.id.page_suivante);
+        page_suivante.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "OnClicked", Toast.LENGTH_LONG).show();
-                TextView affichage = findViewById(R.id.textView2);
-                affichage.setText("OK");
+                controller.nextPage();
+            }
+        });
+
+        Button page_precedente = findViewById(R.id.page_precedente);
+        page_precedente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.previousPage();
             }
         });
     }

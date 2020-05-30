@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.esiea.githubv.data.GitApi;
+import com.esiea.githubv.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -15,6 +16,7 @@ public class Singletons {
     private static Gson gsonInstance;
     private static GitApi gitApiInstance;
     private static SharedPreferences sharedPreferencesInstance;
+    private static User currentUser;
 
 
     public static Gson getGson() {
@@ -24,6 +26,14 @@ public class Singletons {
                     .create();
         }
         return gsonInstance;
+    }
+
+    public static User getCurrentUser() {
+        return currentUser;
+    }
+
+    public static void setCurrentUser(User user) {
+        currentUser=user;
     }
 
     public static GitApi getGitApi() {
