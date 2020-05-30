@@ -37,16 +37,11 @@ public class MainController {
     }
 
     public void onStart() {
-        /*List<User> userList = getDataFromCache();
-        if(userList != null) {
-            showUserList(userList);
-        } else {*/
         makeApiCallUserList(0);
-        //}
 
     }
 
-    private List<User> getDataFromCache() {
+    public List<User> getDataFromCache() {
         String jsonFavorite = sharedPreferences.getString("jsonFavoriteUserList", null);
         if(jsonFavorite == null) {
             Toast.makeText(view.getApplicationContext(), "JSON load error", Toast.LENGTH_SHORT).show();
@@ -136,7 +131,7 @@ public class MainController {
     }
 
     public void onItemClick(User user) {
-
+        view.navigateToDetails(user);
     }
 
     public void onButtonAClick() {

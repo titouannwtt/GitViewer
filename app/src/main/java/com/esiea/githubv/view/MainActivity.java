@@ -25,7 +25,6 @@ import com.esiea.githubv.model.ListUserAdapter;
 import com.esiea.githubv.R;
 import com.esiea.githubv.model.Repo;
 import com.esiea.githubv.model.User;
-import com.google.gson.GsonBuilder;
 
 import java.util.List;
 
@@ -82,18 +81,56 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void showInterfaceExample() {
+
+
+    public void showRepoList(List<Repo> repos) {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        /*final List<String> input = new ArrayList<>();
-        for(int j=0; j!=100; j++)
-        {
-            input.add("Exemple" + j);
-        }
+        mRepoAdapter = new ListRepoAdapter(repos);
+        recyclerView.setAdapter(mRepoAdapter);
+    }
+
+
+    public void showUserList(List<User> userList) {
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        mUserAdapter = new ListUserAdapter(userList, new ListUserAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(User item) {
+                controller.onItemClick(item);
+            }
+        });
+        recyclerView.setAdapter(mUserAdapter);
+    }
+
+    public void showFavoriteUserList() {
+        List<User> favoriteUserList = controller.getDataFromCache();
+        showUserList(favoriteUserList);
+    }
+
+    public void showError() {
+        Toast.makeText(getApplicationContext(), "API Connexion error", Toast.LENGTH_SHORT).show();
+    }
+
+    public void navigateToDetails(User user) {
+        Toast.makeText(getApplicationContext(), "TEST"+user.getLogin(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void showInterfaceExample() {
+        /*recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
 
         mAdapter = new ListAdapter(input);
         recyclerView.setAdapter(mAdapter);*/
@@ -130,33 +167,4 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
-
-    public void showRepoList(List<Repo> repos) {
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        mRepoAdapter = new ListRepoAdapter(repos);
-        recyclerView.setAdapter(mRepoAdapter);
-    }
-
-
-    public void showUserList(List<User> userList) {
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        mUserAdapter = new ListUserAdapter(userList);
-        recyclerView.setAdapter(mUserAdapter);
-    }
-
-    public void showError() {
-        Toast.makeText(getApplicationContext(), "API Connexion error", Toast.LENGTH_SHORT).show();
-    }
-
 }

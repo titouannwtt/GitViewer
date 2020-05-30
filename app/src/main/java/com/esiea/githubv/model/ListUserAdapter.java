@@ -17,12 +17,13 @@ import java.util.List;
 public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHolder> {
     private List<User> values;
     private Context context;
+    private final OnItemClickListener listener;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    public interface OnItemClickListener {
+        void onItemClick(User item);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
         TextView txtHeader;
         TextView txtFooter;
         ImageView imgIcon;
@@ -47,52 +48,34 @@ public class ListUserAdapter extends RecyclerView.Adapter<ListUserAdapter.ViewHo
         notifyItemRemoved(position);
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
-    public ListUserAdapter(List<User> myDataset) {
-        values = myDataset;
+    public ListUserAdapter(List<User> myDataset, OnItemClickListener listener) {
+        this.values = myDataset;
+        this.listener = listener;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
-    public ListUserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType) {
-        // create a new view
-        LayoutInflater inflater = LayoutInflater.from(
-                parent.getContext());
-        View v =
-                inflater.inflate(R.layout.row_layout, parent, false);
-        // set the view's size, margins, paddings and layout parameters
+    public ListUserAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View v = inflater.inflate(R.layout.row_layout, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-
-
-
-
-
         final User login = values.get(position);
         holder.txtHeader.setText(login.getLogin());
         Picasso.get().load(login.getAvatar_url()).into(holder.imgIcon);
-
-        //holder.imgIcon.setImageURI(Uri.parse(login.getAvatar_url()));
-        //Picasso.with(context).load(login.getAvatar_url()).into(holder.imgIcon);
-        /*holder.txtHeader.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                remove(position);
-            }
-        });*/
-
         holder.txtFooter.setText(""+login.getHtml_url());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                listener.onItemClick(login);
+            }
+        }
+        );
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return values.size();
