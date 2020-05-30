@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //mAdapter.getFilter().filter(query);
+                controller.makeApiCallFindUser(query);
                 return false;
             }
 

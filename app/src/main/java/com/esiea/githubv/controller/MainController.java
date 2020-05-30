@@ -41,7 +41,7 @@ public class MainController {
         if(userList != null) {
             showUserList(userList);
         } else {*/
-        makeApiCall();
+        makeApiCallUserList(0);
         //}
 
     }
@@ -60,33 +60,9 @@ public class MainController {
     }
 
 
-    public void makeApiCall() {
-
-        //=========== RECUPERATION DE REPO
-        String user = "titouannwtt";
-        Call<List<Repo>> callRepo = Singletons.getGitApi().repoUser(user);
-        callRepo.enqueue(new Callback<List<Repo>>() {
-            @Override
-            public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
-                if(response.isSuccessful() && response.body() != null) {
-                    List<Repo> repos = response.body();
-                    view.showRepoList(repos);
-                } else {
-                    view.showError();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Repo>> call, Throwable t) {
-                view.showError();
-            }
-        });
-        //=====================================
-
-
-
+    public void makeApiCallUserList(int page) {
         //=========== RECUPERATION DE TOUS LES UTILISATEURS GITHUB
-        Call<List<User>> callUserlist = Singletons.getGitApi().getUserList("20", "100" );
+        Call<List<User>> callUserlist = Singletons.getGitApi().getUserList("20", String.valueOf(page));
         callUserlist.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
@@ -104,11 +80,32 @@ public class MainController {
                 view.showError();
             }
         });
+    }
 
-    /*
+    public void makeApiCallRepoListOfUser(User user) {
+        //=========== RECUPERATION DE REPO
+        Call<List<Repo>> callRepo = Singletons.getGitApi().repoUser(user.getLogin());
+        callRepo.enqueue(new Callback<List<Repo>>() {
+            @Override
+            public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    List<Repo> repos = response.body();
+                    view.showRepoList(repos);
+                } else {
+                    view.showError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Repo>> call, Throwable t) {
+                view.showError();
+            }
+        });
+    }
+
+    public void makeApiCallFindUser(String login) {
         //=========== RECUPERATION DE UN UTILISATEUR GITHUB
-        String user = "mojombo";
-        Call<User> callUser = Singletons.getGitApi().getUserInformation(user);
+        Call<User> callUser = Singletons.getGitApi().getUserInformation(login);
         callUser.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -127,8 +124,6 @@ public class MainController {
                 view.showError();
             }
         });
-        */
-
     }
 
     private void saveList(List<User> userList) {
