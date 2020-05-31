@@ -17,6 +17,7 @@ public class Singletons {
     private static GitApi gitApiInstance;
     private static SharedPreferences sharedPreferencesInstance;
     private static User currentUser;
+    private static Context contextInstance;
 
 
     public static Gson getGson() {
@@ -49,9 +50,17 @@ public class Singletons {
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {
+        contextInstance=context;
         if(sharedPreferencesInstance == null ) {
             sharedPreferencesInstance = context.getSharedPreferences("favorite", Context.MODE_PRIVATE);
         }
         return sharedPreferencesInstance;
+    }
+
+    public static Context getContextOfSharedPreferences() {
+        if(contextInstance == null ) {
+            contextInstance = null;
+        }
+        return contextInstance;
     }
 }

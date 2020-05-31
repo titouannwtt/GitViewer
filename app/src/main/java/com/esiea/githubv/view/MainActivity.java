@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,8 +33,11 @@ public class MainActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private ListUserAdapter mUserAdapter;
     private SearchView searchView;
+    private View favoris;
     private RecyclerView.LayoutManager layoutManager;
     private MainController controller;
+    private Button page_precedente;
+    private Button page_suivante;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,6 @@ public class MainActivity extends BaseActivity {
         searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setMaxWidth(Integer.MAX_VALUE);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -75,10 +78,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.show_global) {
+            controller.makeApiCallUserList(controller.getCurrentPage());
+        }
+        if(id == R.id.show_favoris) {
+            showFavoriteUserList();
+        }
         return super.onOptionsItemSelected(item);
     }
 
     public void showUserList(List<User> userList) {
+        page_suivante.setVisibility(View.VISIBLE);
+        page_precedente.setVisibility(View.VISIBLE);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
@@ -95,12 +107,27 @@ public class MainActivity extends BaseActivity {
     }
 
     public void showFavoriteUserList() {
-        List<User> favoriteUserList = controller.getDataFromCache();
-        showUserList(favoriteUserList);
+        page_suivante.setVisibility(View.INVISIBLE);
+        page_precedente.setVisibility(View.INVISIBLE);
+        final List<User> favoriteUserList = controller.getDataFromCache();
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        mUserAdapter = new ListUserAdapter(favoriteUserList, new ListUserAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(User item) {
+                controller.onItemClick(item);
+            }
+        });
+        recyclerView.setAdapter(mUserAdapter);
     }
 
     public void showError() {
-        Toast.makeText(getApplicationContext(), "API Connexion error", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
     }
 
     public void navigateToDetails(User user) {
@@ -112,7 +139,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void showPageButton() {
-        Button page_suivante = findViewById(R.id.page_suivante);
+        page_suivante = findViewById(R.id.page_suivante);
         page_suivante.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +147,7 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        Button page_precedente = findViewById(R.id.page_precedente);
+        page_precedente = findViewById(R.id.page_precedente);
         page_precedente.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

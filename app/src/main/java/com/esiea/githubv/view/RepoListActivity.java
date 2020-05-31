@@ -30,8 +30,11 @@ import com.esiea.githubv.model.ListUserAdapter;
 import com.esiea.githubv.R;
 import com.esiea.githubv.model.Repo;
 import com.esiea.githubv.model.User;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 
 public class RepoListActivity extends AppCompatActivity {
@@ -41,9 +44,11 @@ public class RepoListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private RepoListController controller;
     private User user;
+    private boolean in_fav;
 
     private TextView loginName;
     private ImageView imgIcon;
+    private String login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,7 @@ public class RepoListActivity extends AppCompatActivity {
 
         //On récupère l'utilisateur pour lequel on souhaite afficher la liste des repos
         Intent intent = getIntent();
-        String login = intent.getStringExtra("login");
+        login = intent.getStringExtra("login");
         String id = intent.getStringExtra("id");
         String avatar_url = intent.getStringExtra("avatar_url");
         controller = new RepoListController(this,
@@ -60,7 +65,6 @@ public class RepoListActivity extends AppCompatActivity {
                 Singletons.getSharedPreferences(getApplicationContext())
         );
         controller.onStart();
-        //controller.getUserById(id);
         controller.getUserByLogin(login);
 
 
@@ -69,17 +73,30 @@ public class RepoListActivity extends AppCompatActivity {
         imgIcon = findViewById(R.id.icon);
         Picasso.get().load(avatar_url).into(imgIcon);
         loginName.setText(login);
-
-        /*Button favoris_button = findViewById(R.id.favoris_button);
-        favoris_button.setBackgroundColor(Color.RED);
-        favoris_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(getApplicationContext(), "OnClicked", Toast.LENGTH_LONG).show();
-            }
-        });*/
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_repo, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.add_favoris) {
+            if(controller.inFav(login)==false) {
+                //controller.addToFav();
+            }
+        }
+
+        if(id == R.id.remove_favoris) {
+            if(controller.inFav(login)==true) {
+                //controller.removeToFav();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void showRepoList(List<Repo> repos) {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view_repo);

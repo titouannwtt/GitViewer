@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -78,6 +79,63 @@ public class RepoListController {
         });
     }
 
+    public List<User> getDataFromCache() {
+        String jsonFavorite = sharedPreferences.getString("jsonFavoriteUserList", null);
+        if(jsonFavorite == null) {
+            Toast.makeText(view.getApplicationContext(), "JSON load error", Toast.LENGTH_SHORT).show();
+            return null;
+        } else {
+            Type listType = new TypeToken<List<User>>() {
+            }.getType();
+            return gson.fromJson(jsonFavorite, listType);
+        }
+    }
+
+    public boolean inFav(String login) {
+        boolean inFav=false;
+        List<User> favList = getDataFromCache();
+        Iterator<User> iterator = favList.iterator();
+        while(iterator.hasNext())
+        {
+            String value = iterator.next().getLogin();
+            if (login.equals(value))
+            {
+                inFav=true;
+                break;
+            }
+        }
+        return inFav;
+    }
+
+    public void addToFav(User user) {
+        List<User> favList = getDataFromCache();
+        favList.add(user);
+        saveList(favList);
+    }
+
+    public void removeToFav(User user) {
+        List<User> favList = getDataFromCache();
+        Iterator<User> iterator = favList.iterator();
+        while(iterator.hasNext())
+        {
+            String value = iterator.next().getLogin();
+            if (user.getLogin().equals(value))
+            {
+                iterator.remove();
+                break;
+            }
+        }
+        saveList(favList);
+    }
+
+    public void saveList(List<User> userList) {
+        String jsonString = gson.toJson(userList);
+        sharedPreferences
+                .edit()
+                .putString("jsonFavoriteUserList", jsonString)
+                .apply();
+        Toast.makeText(view.getApplicationContext(), "JSON saved", Toast.LENGTH_SHORT).show();
+    }
 
     public void onItemClick(User user) {
         //view.navigateToDetails(user);

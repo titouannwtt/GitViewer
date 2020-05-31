@@ -40,6 +40,10 @@ public class MainController {
         currentPage=currentPage+20;
         makeApiCallUserList(currentPage);
     }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
     public void previousPage() {
         if(currentPage!=0) {
             currentPage=currentPage-20;
@@ -58,7 +62,9 @@ public class MainController {
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     List<User> userList = response.body();
-                    //saveList(userList);
+                    if(getDataFromCache()==null) {
+                        saveList(userList);
+                    }
                     view.showUserList(userList);
                 } else {
                     view.showError();
@@ -101,14 +107,13 @@ public class MainController {
             Toast.makeText(view.getApplicationContext(), "JSON load error", Toast.LENGTH_SHORT).show();
             return null;
         } else {
-            Toast.makeText(view.getApplicationContext(), "JSON loaded", Toast.LENGTH_SHORT).show();
             Type listType = new TypeToken<List<User>>() {
             }.getType();
             return gson.fromJson(jsonFavorite, listType);
         }
     }
 
-    private void saveList(List<User> userList) {
+    public void saveList(List<User> userList) {
         String jsonString = gson.toJson(userList);
         sharedPreferences
                 .edit()
